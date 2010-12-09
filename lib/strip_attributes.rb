@@ -1,31 +1,44 @@
 module StripAttributes
-  # Strips whitespace from model fields and converts blank values to nil.
-  def strip_attributes!(options = nil)
-    before_validation do |record|
-      attributes = StripAttributes.narrow(record.attributes, options)
-      attributes.each do |attr, value|
-        if value.respond_to?(:strip)
-          record[attr] = (value.blank?) ? nil : value.strip
-        end
-      end
-    end
+
+  def self.included(klass)
+    klass.send :extend, ClassMethods
+    # sets up default of stripping for all fields
+    klass.send :strip_attributes!
+    klass.class_inheritable_reader :strip_attributes_options
+    klass.send :include, InstanceMethods
   end
 
-  # Necessary because Rails has removed the narrowing of attributes using :only
-  # and :except on Base#attributes
-  def self.narrow(attributes, options)
-    if options.nil?
-      attributes
-    else
-      if except = options[:except]
-        except = Array(except).collect { |attribute| attribute.to_s }
-        attributes.except(*except)
-      elsif only = options[:only]
-        only = Array(only).collect { |attribute| attribute.to_s }
-        attributes.slice(*only)
-      else
-        raise ArgumentError, "Options does not specify :except or :only (#{options.keys.inspect})"
+  module ClassMethods
+    def strip_attributes!(options = {})
+      write_inheritable_attribute(:strip_attributes_options, {
+        :except => Array(options[:except] || []),
+        :only => Array(options[:only] || [])
+      })
+    end
+  end
+  
+  module InstanceMethods
+
+    def strip_attributes!
+      return if strip_attributes_options.nil?
+      
+      self.class.columns.each do |column|
+        next unless (column.type == :string || column.type == :text)
+        
+        field = column.name.to_sym
+        value = self[field]
+
+        if !value.respond_to?(:strip)
+          next
+        elsif strip_attributes_options[:except].include?(field)
+          next
+        elsif strip_attributes_options[:only].any? && !strip_attributes_options[:only].include?(field)
+          next
+        else
+          self[field] = (value.blank?) ? nil : value.strip
+        end
       end
+      
     end
   end
 end

@@ -12,7 +12,6 @@ end
 
 class StripAllMockRecord < ActiveRecord::Base
   include MockAttributes
-  strip_attributes!
 end
 
 class StripOnlyOneMockRecord < ActiveRecord::Base

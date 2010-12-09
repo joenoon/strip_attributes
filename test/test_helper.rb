@@ -16,6 +16,6 @@ class ActiveRecord::Base
 
   def self.column(name, sql_type = nil, default = nil, null = true)
     @columns ||= []
-    @columns << ActiveRecord::ConnectionAdapters::Column.new(name.to_s, default, sql_type, null)
+    @columns << ActiveRecord::ConnectionAdapters::Column.new(name.to_s, default, (sql_type.nil? ? nil : sql_type.to_s), null)
   end
 end

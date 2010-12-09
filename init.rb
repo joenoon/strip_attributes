@@ -1,2 +1,3 @@
 require 'strip_attributes'
-ActiveRecord::Base.extend(StripAttributes)
+ActiveRecord::Base.send :include, StripAttributes
+ActiveRecord::Base.before_validation :strip_attributes!

@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'strip_attributes'
-  s.version     = 1.1.0
+  s.version     = '1.1.0'
   s.summary     = 'strip_attributes'
   s.description = 'StripAttributes is a Rails plugin that automatically strips all ActiveRecord model attributes of leading and trailing whitespace before validation. If the attribute is blank, it strips the value to nil.'
 
@@ -11,7 +11,4 @@ Gem::Specification.new do |s|
   s.author            = 'Joe Noon'
   s.email             = 'joenoon@gmail.com'
   s.homepage          = 'http://github.com/joenoon'
-  #s.rubyforge_project = 'strip_attributes'
-
-  #s.bindir             = 'bin'
 end
